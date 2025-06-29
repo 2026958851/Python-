@@ -2768,3 +2768,896 @@ student1.introduce()
 掌握了类和对象，我们只是刚刚推开了 OOP 的大门。下次课，我们将深入学习 OOP 的三大核心特性中的前两个：**封装 (Encapsulation)** 和 **继承 (Inheritance)**。它们将让我们的“蓝图”变得更安全、更强大、也更具扩展性。
 
 我们下次课见！
+
+
+
+好的，我们继续深入探索面向对象编程（OOP）的奥秘。
+
+上一节课，我们学会了用 `class` 来创建对象的“蓝图”，将数据（属性）和行为（方法）捆绑在了一起。今天，我们要学习两个能让这个“蓝图”变得更专业、更安全、更具扩展性的核心原则：**封装 (Encapsulation)** 和 **继承 (Inheritance)**。
+
+------
+
+
+
+### **第三章：Python 高级 (继续)**
+
+
+
+
+
+##### **今日课题：面向对象编程 (二) - 封装与继承**
+
+
+
+
+
+#### **1. 封装 (Encapsulation) - 为你的代码造一个“安全外壳”**
+
+
+
+**封装**，顾名思义，就是把东西“封装”起来。在 OOP 中，它有两个层面的意思：
+
+1. **捆绑**：将属性和方法捆绑在一个类里（这点我们已经做到了）。
+2. **隐藏**：隐藏对象内部的复杂细节和不希望外部直接访问的数据，只暴露有限的、安全的接口（方法）供外部使用。
+
+为什么要隐藏？
+
+想象一下银行账户。银行绝不会让你直接去修改数据库里的存款余额。你只能通过ATM机（安全的接口）进行“存款”和“取款”操作，ATM机内部会进行各种验证（比如检查余额是否足够），确保操作的合法性。封装就是为我们的数据建立起这样一道“防火墙”。
+
+如何在 Python 中实现封装？
+
+Python 通过命名约定来暗示属性的可见性。
+
+- **公有属性 (Public)**：我们之前创建的属性，如 `cat.name`，都是公有的，可以在类的外部被随意访问和修改。
+- **私有属性 (Private)**：如果一个属性名以**两个下划线 `__`** 开头，它就变成了**私有属性**。它不能在类的外部被直接访问。
+
+**代码实践：一个安全的银行账户类**
+
+Python
+
+```Python
+class BankAccount:
+    def __init__(self, account_holder, balance=0.0):
+        self.account_holder = account_holder # 公有属性
+        self.__balance = balance             # 私有属性，余额不能被随意修改
+
+    # 提供一个公有的“getter”方法来安全地读取余额
+    def get_balance(self):
+        print(f"账户 {self.account_holder} 的当前余额为: {self.__balance}")
+        return self.__balance
+
+    # 提供公有的“setter”方法来安全地修改余额
+    def deposit(self, amount):
+        if amount > 0:
+            self.__balance += amount
+            print(f"成功存入 {amount} 元。")
+        else:
+            print("存入金额必须大于零！")
+
+    def withdraw(self, amount):
+        if 0 < amount <= self.__balance:
+            self.__balance -= amount
+            print(f"成功取出 {amount} 元。")
+        else:
+            print("取款金额无效或余额不足！")
+
+# --- 测试封装的效果 ---
+my_account = BankAccount("张三", 1000)
+
+# 正常操作
+my_account.deposit(500)
+my_account.withdraw(200)
+my_account.get_balance()
+
+# 尝试从外部直接修改私有属性
+print("\n尝试从外部直接访问 __balance ...")
+try:
+    print(my_account.__balance) # 这行会报错 AttributeError
+except AttributeError as e:
+    print(f"访问失败! 错误信息: {e}")
+
+print("通过封装，我们保护了账户余额的安全性。")
+```
+
+------
+
+
+
+#### **2. 继承 (Inheritance) - “龙生龙，凤生凤”**
+
+
+
+**继承**是 OOP 中代码复用的核心机制。它允许我们创建一个新类（**子类**），这个子类可以继承一个已存在的类（**父类**）的所有属性和方法，并且可以在此基础上添加自己独有的新功能，或者修改（重写）从父类继承来的功能。
+
+这就像“狗”继承了“动物”的共性（会吃、会睡），但又发展出了自己独有的特性（会汪汪叫）。
+
+**语法结构：**
+
+Python
+
+```Python
+class Parent:
+    # 父类的定义
+    ...
+
+class Child(Parent): # 在括号里写上父类的名字，即表示继承
+    # 子类的定义
+    ...
+```
+
+**代码实践：动物世界的继承关系**
+
+Python
+
+```Python
+# 1. 定义一个父类 Animal
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def eat(self):
+        print(f"{self.name} 正在吃东西。")
+
+    def sleep(self):
+        print(f"{self.name} 正在睡觉。")
+
+# 2. 定义一个子类 Dog，继承自 Animal
+class Dog(Animal):
+    # 子类可以添加父类没有的新方法
+    def bark(self):
+        print(f"{self.name} 正在汪汪叫！")
+
+# 3. 定义另一个子类 Cat，也继承自 Animal
+class Cat(Animal):
+    # 子类可以重写(override)父类的方法
+    def eat(self):
+        print(f"{self.name} 正在优雅地吃着猫粮。")
+
+# --- 测试继承的效果 ---
+# 创建一个 Dog 对象
+dog = Dog("旺财")
+dog.eat()   # 继承自 Animal 类的方法
+dog.sleep() # 继承自 Animal 类的方法
+dog.bark()  # 自己独有的方法
+
+print("-" * 20)
+
+# 创建一个 Cat 对象
+cat = Cat("咪咪")
+cat.eat()   # 调用的是 Cat 类中被重写后的 eat 方法
+cat.sleep() # 继承自 Animal 类的方法
+```
+
+使用 super() 调用父类方法
+
+在子类中重写了父类的方法后，有时我们还想调用一下父类中那个被覆盖的原始方法。这时就可以用 super() 函数。
+
+Python
+
+```Python
+class SuperDog(Dog):
+    def __init__(self, name, breed):
+        # 使用 super().__init__() 调用父类(Dog的父类是Animal)的初始化方法
+        super().__init__(name)
+        self.breed = breed # 添加子类自己的新属性
+
+    def eat(self):
+        super().eat() # 先调用父类 Animal 的 eat 方法
+        print(f"它是一只{self.breed}，喜欢吃骨头。") # 再添加自己的新功能
+
+s_dog = SuperDog("大黄", "金毛巡回犬")
+s_dog.eat()
+```
+
+------
+
+**今日小结：**
+
+今天我们学习了 OOP 的两大支柱：
+
+- **封装**：通过将属性设为私有 (`__`)，并提供公有方法来控制其访问，从而保护数据的完整性和安全性。
+- **继承**：通过 `class Child(Parent)` 的语法，让子类可以复用和扩展父类的代码，极大地提高了代码的复用性。
+
+**下次课预告：**
+
+掌握了封装和继承，我们还剩下 OOP 三大特性中的最后一个，也是最能体现其灵活性和扩展性的一个——**多态 (Polymorphism)**。同时，我们也会接触到一些 Python 的高级特性，比如**列表推导式**，让我们的代码写得更高效、更 Pythonic。
+
+我们下次课见！
+
+
+
+好的，我们继续攀登 Python 高级编程的山峰。
+
+上一节课，我们学习了**封装**和**继承**。封装像给代码加了“安全锁”，而继承则让我们实现了“代码复用”。今天，我们将学习面向对象三大特性中的最后一个，也是最能体现其灵活性的一环——**多态 (Polymorphism)**。学完它之后，我再额外教你一个能让你代码效率和“逼格”都瞬间提升的高级特性。
+
+------
+
+
+
+### **第三章：Python 高级 (继续)**
+
+
+
+
+
+##### **今日课题：多态 与 列表推导式**
+
+
+
+
+
+#### **1. 多态 (Polymorphism) - “万物皆可同等对待”**
+
+
+
+“多态”这个词听起来很学术，它的字面意思是“多种形态”。在编程中，它指的是**不同的对象，在收到同一个消息（调用同一个方法）时，可以有不同的行为表现**。
+
+一个生活中的比喻：
+
+想象一个USB接口。这个接口（就是那个统一的调用方式）并不关心你插进来的是U盘、键盘、还是手机。只要你的设备符合USB规范（有USB插头，能响应USB协议），它就能正常工作。U盘会表现为“存储数据”，键盘会表现为“输入文字”，手机会表现为“充电”。这就是多态：一个接口，多种形态。
+
+在 Python 中，多态的实现非常自然，通常我们称之为“**鸭子类型 (Duck Typing)**”。
+
+> “如果一个东西走起来像鸭子，叫起来也像鸭子，那么它就是一只鸭子。”
+
+这意味着 Python 不关心一个对象的**类型**到底是什么，只关心它有没有我们想调用的那个**方法**。
+
+代码实践：不同动物的叫声
+
+我们延续之前的动物例子。
+
+Python
+
+```Python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def speak(self):
+        # 一个通用的 speak 方法
+        pass
+
+class Dog(Animal):
+    def speak(self): # 重写父类方法
+        return f"{self.name} 说: 汪汪！"
+
+class Cat(Animal):
+    def speak(self): # 重写父类方法
+        return f"{self.name} 说: 喵喵~"
+
+class Frog(Animal):
+    def speak(self): # 重写父类方法
+        return f"{self.name} 说: 呱呱！"
+
+# --- 多态的体现 ---
+# 我们定义一个统一的函数接口，它不关心传进来的是什么动物
+def make_it_speak(animal_object):
+    # 我只管调用你的 .speak() 方法，至于你怎么叫，由你自己决定
+    print(animal_object.speak())
+
+# 创建不同的对象
+dog = Dog("旺财")
+cat = Cat("咪咪")
+frog = Frog("小绿")
+
+# 把不同的对象传入同一个函数
+make_it_speak(dog)  # 输出: 旺财 说: 汪汪！
+make_it_speak(cat)  # 输出: 咪咪 说: 喵喵~
+make_it_speak(frog) # 输出: 小绿 说: 呱呱！
+```
+
+看到妙处了吗？`make_it_speak` 函数非常具有扩展性。未来即使我们新增了一个 `Cow` 类，只要它也有一个 `speak` 方法，这个函数就完全不需要修改，可以直接处理 `Cow` 对象。这就是多态的威力，它让我们的代码遵循“对扩展开放，对修改关闭”的黄金原则。
+
+------
+
+
+
+#### **2. 高级特性：列表推导式 (List Comprehension)**
+
+
+
+学完了 OOP 的核心，我们来学习一个非常 Pythonic (具有Python风格) 的高级特性，它能让你用一行代码完成原本需要三四行才能完成的工作。
+
+**问题：** 假如我们有一个数字列表，想得到一个包含它们平方的新列表。按照我们以前的知识，我们会这么写：
+
+Python
+
+```Python
+numbers = [1, 2, 3, 4, 5]
+squares = [] # 先创建一个空列表
+for n in numbers:
+    squares.append(n * n)
+
+print(squares) # 输出: [1, 4, 9, 16, 25]
+```
+
+这代码没问题，但不够简洁。
+
+**列表推导式的写法：**
+
+Python
+
+```Python
+numbers = [1, 2, 3, 4, 5]
+
+# 用一行代码完成同样的事情
+squares = [n * n for n in numbers]
+
+print(squares) # 输出: [1, 4, 9, 16, 25]
+```
+
+语法结构：[表达式 for 元素 in 可迭代对象]
+
+它就像把 for 循环和 append 操作压缩到了一行里，非常清晰。
+
+带条件的列表推导式
+
+我们甚至可以在后面加上 if 条件，只处理满足条件的元素。
+
+**问题：** 从上面的 `numbers` 列表里，只计算**偶数**的平方。
+
+Python
+
+```Python
+numbers = [1, 2, 3, 4, 5, 6]
+
+# 传统写法
+even_squares = []
+for n in numbers:
+    if n % 2 == 0:
+        even_squares.append(n * n)
+print(even_squares) # 输出: [4, 16, 36]
+
+# 列表推导式写法
+even_squares_comp = [n * n for n in numbers if n % 2 == 0]
+print(even_squares_comp) # 输出: [4, 16, 36]
+```
+
+**语法结构：`[表达式 for 元素 in 可迭代对象 if 条件]`**
+
+列表推导式不仅代码更短，执行效率通常也比 `for` 循环加 `append` 的方式要高。这是每个 Python 开发者都应该掌握的技巧。
+
+------
+
+**今日小结：**
+
+今天我们学习了两个非常重要的概念：
+
+- **多态**：一种允许不同对象对同一消息作出不同响应的编程思想，它极大地增强了代码的灵活性和扩展性。
+- **列表推导式**：一种简洁、高效、Pythonic 的语法，用于从一个已有的集合快速创建出新的列表。
+
+**下次课预告：**
+
+第三章的高级内容还有很多宝藏。下次课，我们将继续探索 Python 的高级特性，学习两个与内存效率和大规模数据处理密切相关的概念：**迭代器 (Iterator)** 和 **生成器 (Generator)**。它们是编写高性能 Python 代码的关键。
+
+我们下次课见！
+
+
+
+好的，我们继续探索 Python 的高级特性。
+
+上节课我们学习了多态，它是 OOP 的三大支柱之一。同时，我们还学习了列表推导式，这是一种编写高效、简洁代码的技巧。
+
+今天，我们要解决一个在处理大量数据时非常常见的问题：**内存消耗**。
+
+想象一下，如果我们要处理一个包含一百万、甚至一亿个元素的列表，`squares = [n*n for n in range(100_000_000)]` 这种写法会瞬间尝试在内存里创建一亿个元素的列表，这很可能会耗尽你电脑的所有内存，导致程序崩溃。
+
+为了解决这个问题，Python 提供了一种更“聪明”、更“懒惰”的数据处理方式。这就是我们今天要学习的**迭代器 (Iterator)** 和**生成器 (Generator)**。
+
+------
+
+
+
+### **第三章：Python 高级 (继续)**
+
+
+
+
+
+##### **今日课题：迭代器与生成器**
+
+
+
+
+
+#### **1. 可迭代对象 (Iterable) vs 迭代器 (Iterator)**
+
+
+
+在深入之前，我们必须分清两个非常相似但本质不同的概念。
+
+- **可迭代对象 (Iterable)**：你**可以从中逐个获取元素**的对象。我们之前学过的 `list`, `tuple`, `dict`, `set`, `str` 都是可迭代对象。你可以把它们想象成一个**完整的“容器”**，里面装好了所有数据。
+- **迭代器 (Iterator)**：它是一个**“数据流”对象**。它不一次性把所有数据都加载到内存，而是**记住当前的位置**，当你需要下一个数据时，它才**计算并返回**给你。它就像一个发牌器，你按一下，它才发一张牌，而不是一次性把所有牌都给你。
+
+for 循环的幕后工作原理：
+
+我们一直使用的 for 循环，其背后就是迭代器在工作。当你写 for x in my_list: 时，Python 解释器实际上做了两件事：
+
+1. 调用 `iter(my_list)` 函数，从 `my_list` 这个可迭代对象中获取一个迭代器。
+2. 不断地调用 `next(迭代器)` 函数，来获取下一个元素，直到没有元素可取，迭代器抛出 `StopIteration` 异常，`for` 循环随之结束。
+
+Python
+
+```Python
+my_list = ['a', 'b', 'c']
+
+# 手动模拟 for 循环
+my_iterator = iter(my_list) # 从可迭代对象获取迭代器
+
+print(next(my_iterator))  # 输出: a
+print(next(my_iterator))  # 输出: b
+print(next(my_iterator))  # 输出: c
+# print(next(my_iterator))  # 这行会报错 StopIteration
+```
+
+迭代器的核心优势在于**内存效率**，因为它按需生成数据，所以无论数据流有多长（甚至是无限的），它占用的内存都非常小。
+
+
+
+#### **2. 生成器 (Generator) - 创建迭代器的简单方式**
+
+
+
+迭代器虽然强大，但如果要我们自己去创建一个符合规范的迭代器类会比较复杂。因此，Python 提供了**生成器**，这是一种非常简单方便的创建迭代器的“语法糖”。
+
+有两种方式可以创建生成器：
+
+**A. 生成器函数 (使用 `yield` 关键字)**
+
+一个函数只要包含了 `yield` 关键字，它就不再是一个普通的函数，而是一个**生成器函数**。调用它会返回一个生成器（也就是一个迭代器）。
+
+`yield` 就像一个“暂停”按钮。当函数执行到 `yield` 时，它会“产出”一个值并**暂停执行**，等待下一次 `next()` 的调用。当再次被调用时，它会从上次暂停的地方**继续执行**。
+
+Python
+
+```Python
+def countdown_generator(start):
+    print("生成器开始...")
+    while start > 0:
+        print(f"即将 yield {start}")
+        yield start # 产出值，并在此暂停
+        start -= 1
+    print("生成器结束。")
+
+# 调用生成器函数，得到一个生成器对象
+my_countdown = countdown_generator(3)
+
+print("准备从生成器取值...")
+print(f"取到的值: {next(my_countdown)}") # 执行到 yield 3，暂停
+print(f"取到的值: {next(my_countdown)}") # 从上次暂停处继续，执行到 yield 2，暂停
+print(f"取到的值: {next(my_countdown)}") # 从上次暂停处继续，执行到 yield 1，暂停
+```
+
+**B. 生成器表达式 (Generator Expression)**
+
+这是我们上节课列表推导式的“兄弟”。你只需要把列表推导式的 `[]` 换成 `()`，就得到了一个生成器表达式。
+
+- `[i for i in range(5)]`：**列表推导式**。立刻在内存中创建一个包含 `[0, 1, 2, 3, 4]` 的列表。
+- `(i for i in range(5))`：**生成器表达式**。创建一个生成器对象，它不存储任何数字，只有在你需要时才一个一个地计算出来。
+
+Python
+
+```Python
+# 创建一个包含一亿个数字平方的列表，会耗尽内存！
+# list_squares = [n*n for n in range(100_000_000)] # 不要运行，会卡死！
+
+# 创建一个能生成一亿个数字平方的生成器，瞬间完成，几乎不占内存
+generator_squares = (n*n for n in range(100_000_000))
+
+print("生成器已创建:", generator_squares)
+
+# 我们可以像迭代器一样使用它
+print("前5个平方数是:")
+for i in range(5):
+    print(next(generator_squares))
+```
+
+**总结：** 当你要处理的数据量非常大，或者你不需要一次性拿到所有结果时，请毫不犹豫地使用生成器，它能极大地优化你程序的内存性能。
+
+------
+
+
+
+##### **动手实践：斐波那契数列生成器**
+
+
+
+斐波那契数列是一个经典的数列，从 0 和 1 开始，后面的每一项都是前面两项的和（0, 1, 1, 2, 3, 5, 8, ...）。请你编写一个生成器函数 `fibonacci_generator`，它可以无限地生成斐波那契数列。
+
+**挑战：**
+
+1. 定义 `fibonacci_generator()` 函数。
+2. 在函数内部使用一个 `while True` 的无限循环。
+3. 在循环的每一次，使用 `yield` 产出当前的斐波那契数。
+4. 调用这个生成器，并用一个 `for` 循环打印出前10个斐波那契数。
+
+Python
+
+```Python
+def fibonacci_generator():
+    a, b = 0, 1
+    while True:
+        yield a
+        a, b = b, a + b
+
+# --- 测试你的生成器 ---
+fib_gen = fibonacci_generator()
+print("前10个斐波那契数:")
+for i in range(10):
+    print(next(fib_gen))
+```
+
+------
+
+**今日小结：**
+
+今天我们深入理解了 Python 的数据处理机制：
+
+- **迭代器**：一种遵循“迭代协议”的惰性数据流对象，通过 `next()` 按需取值，非常节省内存。
+- **生成器**：是创建迭代器的便捷方式，可以是带 `yield` 的函数，也可以是 `()` 形式的表达式。
+
+**下次课预告：**
+
+我们将继续学习 Python 中更高级、也更“烧脑”的两个概念：**闭包 (Closure)** 和 **装饰器 (Decorator)**。它们是 Python 中函数式编程思想的体现，也是许多高级框架和库的底层实现原理，是面试中的高频考点。
+
+我们下次课见！
+
+
+
+好的，我们来挑战一下第三章里最“烧脑”，但也是含金量最高的一部分内容。
+
+前面的课程，我们讨论的函数、类，都是比较具象的概念。今天，我们要接触一些更抽象，但能极大提升你对 Python 理解深度的概念：**闭包 (Closure)** 和 **装饰器 (Decorator)**。它们是很多高级框架（比如我们后面要学的 Flask 和 Django）的基石。
+
+------
+
+
+
+### **第三章：Python 高级 (继续)**
+
+
+
+
+
+##### **今日课题：闭包与装饰器**
+
+
+
+在理解这两个概念之前，我们必须先掌握一个前置知识：**嵌套函数**。
+
+**嵌套函数**，就是在一个函数内部，再定义另一个函数。
+
+Python
+
+```Python
+def outer():
+    print("这是外部函数。")
+    def inner():
+        print("这是嵌套在里面的内部函数。")
+    
+    # 外部函数可以调用它自己内部的函数
+    inner()
+
+outer()
+```
+
+很简单，对吧？关键在于，**内部函数可以访问外部函数的变量**。这个特性，是实现闭包和装饰器的基础。
+
+------
+
+
+
+#### **1. 闭包 (Closure) - 记住环境的函数**
+
+
+
+什么是闭包？
+
+当一个嵌套的内部函数引用了其外部函数的变量，并且这个外部函数把内部函数作为返回值返回了，那么这个返回的内部函数和它所引用的外部变量，就共同构成了一个闭包。
+
+听起来很绕，我们来看一个比喻：
+
+> 你去一家定制工坊（**外部函数**），定制了一个专属的问候语，比如“你好, 张三”（**外部函数的变量**）。工坊给了你一个定制好的机器人（**返回的内部函数**）。你离开工坊后（**外部函数执行完毕**），这个机器人依然**记得**你当初定制的问候语。你一按它的开关，它就会说“你好, 张三”。这个记得自己专属任务的机器人，就是一个闭包。
+
+**构成闭包的三个条件：**
+
+1. 有嵌套函数。
+2. 内部函数引用了外部函数的变量。
+3. 外部函数返回了内部函数。
+
+**代码实践：**
+
+Python
+
+```Python
+def greeting_conf(prefix):
+    # prefix 是外部函数的变量，它被“关”在了闭包里
+    def greet(name):
+        # 内部函数引用了外部的 prefix 变量
+        print(f"{prefix}, {name}!")
+    
+    # 返回内部函数（注意，这里没有括号，是返回函数本身，而不是它的执行结果）
+    return greet
+
+# --- 创建两个不同的闭包实例 ---
+# morning_greeter 是一个“记得” prefix='早上好' 的函数
+morning_greeter = greeting_conf("早上好") 
+# evening_greeter 是一个“记得” prefix='晚上好' 的函数
+evening_greeter = greeting_conf("晚上好")
+
+# --- 调用闭包 ---
+# 尽管 greeting_conf 函数已经执行完毕，但它们依然记得各自的 prefix
+morning_greeter("张三") # 输出: 早上好, 张三!
+evening_greeter("李四") # 输出: 晚上好, 李四!
+```
+
+闭包的强大之处在于，它能将数据（外部变量）和操作（内部函数）“绑定”在一起，并且能“记忆”状态。
+
+------
+
+
+
+#### **2. 装饰器 (Decorator) - 优雅的代码“包装工”**
+
+
+
+**装饰器**本质上就是一个闭包，它是一种特殊的设计模式，允许你在**不修改任何函数源代码**的情况下，为该函数添加额外的功能。
+
+为什么要用装饰器？
+
+假设我们有很多个函数，现在我们想在每个函数执行前后都打印一行日志，或者计算一下每个函数的执行时间。我们总不能去每个函数里都手动添加这些重复的代码吧？装饰器就是用来解决这个问题的。
+
+**一个最简单的装饰器：**
+
+Python
+
+```Python
+# 1. 定义一个装饰器函数
+# 它接收一个函数作为参数
+def simple_decorator(func):
+    # 定义一个包装函数（这就是一个闭包）
+    def wrapper():
+        print("--- 函数开始执行 ---")
+        func() # 调用原始函数
+        print("--- 函数执行结束 ---")
+    # 装饰器返回这个包装好的函数
+    return wrapper
+
+# 2. 使用 @ 语法糖来应用装饰器
+@simple_decorator
+def say_hello():
+    print("你好！")
+
+@simple_decorator
+def say_goodbye():
+    print("再见！")
+
+# 3. 调用被装饰后的函数
+say_hello()
+print("*"*20)
+say_goodbye()
+```
+
+`@simple_decorator` 这行代码，它等价于 `say_hello = simple_decorator(say_hello)`。它就是 Python 提供的一个“语法糖”，让我们能非常优雅地“包装”一个函数。
+
+带参数的函数的装饰器
+
+如果我们的原始函数需要接收参数怎么办？我们需要让 wrapper 函数也能接收任意参数，并把它们传递给原始函数。这里需要用到 *args 和 **kwargs。
+
+Python
+
+```Python
+import time
+
+def timer_decorator(func):
+    # wrapper 能够接收任意参数
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs) # 将参数原封不动地传给原始函数
+        end_time = time.time()
+        print(f"函数 '{func.__name__}' 执行耗时: {end_time - start_time:.4f} 秒")
+        return result # 把原始函数的返回值也返回出去
+    return wrapper
+
+@timer_decorator
+def complex_calculation(n):
+    print("正在进行复杂计算...")
+    total = 0
+    for i in range(n):
+        total += i
+    print("计算完成。")
+    return total
+
+# 调用被装饰的带参函数
+final_sum = complex_calculation(10000000)
+print(f"计算结果是: {final_sum}")
+```
+
+------
+
+**今日小结：**
+
+今天我们学习了两个非常抽象但强大的概念：
+
+- **闭包**：一个“有记忆”的函数，它由一个嵌套函数和其引用的外部环境变量组成。
+- **装饰器**：利用闭包实现的、用于在不修改原函数代码前提下为其增加新功能的“包装器”，核心语法是 `@`。
+
+理解装饰器是通往 Python 高级编程的必经之路，请务必多看几遍，亲手实践。
+
+**下次课预告：**
+
+至此，第三章最核心的理论部分我们已经学的差不多了。下一节课，我们将学习本章最后一个主题：**并发编程 (Concurrent Programming)**。我们将初步了解如何通过**多线程**和**多进程**，让你的 Python 程序能够“一心二用”，同时处理多个任务。
+
+我们下次课见！
+
+
+
+好的，我们来学习第三章的最后一个，也是非常强大的一个主题。
+
+到目前为止，我们所有的程序都是**串行执行**的。就像一个只有一个窗口的银行，必须办完一个客户的业务，才能接待下一个。如果某个业务特别耗时（比如下载一个大文件、进行复杂的科学计算），整个程序就会被“卡住”，无法响应任何其他事情。
+
+为了解决这个问题，我们需要让程序学会“分身术”，能够同时处理多个任务。这就是**并发编程 (Concurrent Programming)**。
+
+------
+
+
+
+### **第三章：Python 高级 (最终章)**
+
+
+
+
+
+##### **今日课题：并发编程 - 多线程与多进程**
+
+
+
+在开始之前，我们先要理清两个概念：**并发 (Concurrency)** 和 **并行 (Parallelism)**。
+
+- **并发**：指的是**逻辑上**同时处理多个任务。就像一个咖啡师，他可以先接单，然后去启动咖啡机（等待咖啡机制作），在等待的间隙，他可以去准备下一个杯子。他是在多个任务之间快速切换，看起来像在同时做很多事。
+- **并行**：指的是**物理上**同时处理多个任务。这需要多个“工人”，比如咖啡店请了多个咖啡师，他们每人一台机器，在同一时刻各自独立地制作咖啡。这需要多核CPU的支持。
+
+**结论：并行一定是并发，但并发不一定是并行。**
+
+Python实现并发主要有两种方式：多线程和多进程。
+
+------
+
+
+
+#### **1. 多线程 (Threading) - I/O密集型任务的利器**
+
+
+
+**线程 (Thread)** 是操作系统能够进行运算调度的最小单位。你可以把它看作是一个程序内部的一条“执行流”。多线程，就是一个程序里有多条执行流在同时“奔跑”。
+
+适用场景：I/O 密集型 (I/O-Bound) 任务。
+
+什么是 I/O 密集型？就是程序大部分时间都在等待输入/输出操作完成。比如：
+
+- 等待网络响应（下载文件、访问API）
+- 等待读取/写入硬盘
+- 等待数据库查询结果
+
+在这些“等待”的时刻，CPU其实是空闲的。多线程允许CPU在A线程等待的时候，切换去执行B线程的任务，从而极大地提高了程序的效率。
+
+Python的GIL（全局解释器锁）
+
+这是一个绕不开的重要概念。在最常用的 CPython 解释器中，有一个叫做全局解释器锁 (Global Interpreter Lock, GIL) 的东西。它规定，在同一时刻，一个 Python 进程中只能有一个线程在执行 Python 字节码。这意味着，即使在多核CPU上，Python的多线程也无法真正地并行执行CPU密集型任务。但在执行I/O操作时，GIL会被释放，所以多线程对于I/O密集型任务依然非常高效。
+
+**代码实践：** 使用 `threading` 模块模拟下载任务。
+
+Python
+
+```Python
+import threading
+import time
+
+def download_task(filename):
+    print(f"开始下载 {filename}...")
+    time.sleep(2) # 模拟I/O等待，比如下载耗时2秒
+    print(f"{filename} 下载完成。")
+
+# --- 串行执行 ---
+start_time = time.time()
+download_task("电影.mp4")
+download_task("音乐.mp3")
+end_time = time.time()
+print(f"串行执行耗时: {end_time - start_time:.2f} 秒\n") # 大约 4 秒
+
+# --- 多线程并发执行 ---
+# 创建线程对象
+thread1 = threading.Thread(target=download_task, args=("电影.mp4",))
+thread2 = threading.Thread(target=download_task, args=("音乐.mp3",))
+
+start_time = time.time()
+# 启动线程
+thread1.start()
+thread2.start()
+
+# 等待所有线程执行完毕
+thread1.join()
+thread2.join()
+end_time = time.time()
+print(f"多线程并发耗时: {end_time - start_time:.2f} 秒") # 大约 2 秒
+```
+
+可以看到，通过多线程，总耗时约等于最长的那个任务的耗时，效率提升非常明显。
+
+------
+
+
+
+#### **2. 多进程 (Multiprocessing) - CPU密集型任务的救星**
+
+
+
+**进程 (Process)** 是操作系统进行资源分配和调度的基本单位。每个进程都有自己独立的内存空间。多进程就是启动多个独立的进程，每个进程都在自己的内存空间里运行。
+
+适用场景：CPU 密集型 (CPU-Bound) 任务。
+
+这类任务需要大量的CPU计算，比如：
+
+- 复杂的数学运算、数据分析
+- 视频编码、图像处理
+
+因为每个进程都有自己独立的Python解释器和内存，所以它们**不受GIL的限制**。在多核CPU上，多进程可以实现真正的**并行计算**，充分利用所有CPU核心。
+
+**代码实践：** 使用 `multiprocessing` 模块执行计算任务。
+
+Python
+
+```Python
+import multiprocessing
+import time
+
+def calculation_task(name):
+    print(f"开始计算任务 {name}...")
+    # 模拟大量计算
+    total = 0
+    for i in range(10**8):
+        total += i
+    print(f"计算任务 {name} 结束。")
+
+# 在Windows和macOS中，多进程代码必须放在这个if语句块下
+if __name__ == "__main__":
+    # 创建进程对象
+    process1 = multiprocessing.Process(target=calculation_task, args=("A",))
+    process2 = multiprocessing.Process(target=calculation_task, args=("B",))
+
+    start_time = time.time()
+    # 启动进程
+    process1.start()
+    process2.start()
+
+    # 等待所有进程执行完毕
+    process1.join()
+    process2.join()
+    end_time = time.time()
+    print(f"多进程并行耗时: {end_time - start_time:.2f} 秒")
+    # 如果是串行执行，耗时会是这个时间的约两倍
+```
+
+------
+
+**今日小结与第三章总结：**
+
+今天我们初探了并发编程的世界：
+
+- **多线程 `threading`**：通过线程间切换实现并发，适合**I/O密集型**任务，但受GIL限制无法利用多核进行并行计算。
+- **多进程 `multiprocessing`**：通过创建独立进程绕开GIL，可以实现真正的并行计算，适合**CPU密集型**任务。
+
+至此，**我要非常郑重地恭喜你！我们已经全部完成了第一部分“Python语言核心”的所有内容，顺利通关了难度最高的第三章！**
+
+你现在已经掌握了：
+
+- Python的基础语法和数据结构。
+- 函数、模块、文件操作。
+- 面向对象编程（封装、继承、多态）。
+- 异常处理、装饰器、生成器等高级特性。
+- 并发编程的基础概念。
+
+你已经不再是一个Python初学者，而是一个具备了坚实语言基础的准开发者了！
+
+**下次课预告：**
+
+下一节课，我们将正式开启我们学习路径的**第二部分：后端核心技术**。我们将从**第四章：数据库 (Database)** 开始，学习专业的数据库系统 **MySQL**，并掌握所有后端开发者都必须精通的查询语言——**SQL**。这是你从“写脚本”到“开发大型应用”的关键一步，让我们一起迎接新的挑战！
